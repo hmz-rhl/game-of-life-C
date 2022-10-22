@@ -1,5 +1,5 @@
 /**
- * @author
+ * @author Hamza RAHAL
  * 
 */
 #include <stdio.h>
@@ -8,7 +8,7 @@
 #include <ncurses.h>
 #include <unistd.h>
 
-#define MAX 256
+#define MAX 512
 
 #define UP 65
 #define DOWN 66
@@ -31,6 +31,8 @@
 #define STOPPED 0
 #define EXIT -1
 #define PAUSED -2
+#define STABLE -3
+#define BLINKING -4
 
 // structure of a cell
 typedef struct cell
@@ -42,15 +44,17 @@ typedef struct cell
 //structure of the game
 typedef struct gameOfLife
 {
-    int cell[SIZE][SIZE];
-    int previousCell[SIZE][SIZE];
-    int secondPreviousCell[SIZE][SIZE];
-    int state;
-    int cursorX;
-    int cursorY;
-    char msgBox[MAX];
-    int generation;
-    int nbAlive;
+    int cell[SIZE][SIZE];                   /**/
+    int previousCell[SIZE][SIZE];           /**/
+    int secondPreviousCell[SIZE][SIZE];     /**/
+    int state;                              /* state of the game : RUNNING PAUSED STOPPED EXIT INIT*/
+    float speed;
+    int cursorX;                            /* cursor positions :                                           */
+    int cursorY;                            /* to display it on the screen and know the user selections)    */
+
+    char msgBox[MAX];                       /* stores the content to display on the message box             */
+    int generation;                         /* stores the generation of the game of life array              */
+    int nbAlive;                            /* stores the alive cell to display it on the message box       */
 
 } gameOfLife_t;
 
@@ -98,62 +102,116 @@ int main()
     gameOfLife_t game;
 
     // speed of the simulation
-    float speed = 1.0;
+
 
     char input;
     initscr();			        /* Start curses mode 		        */
     
-    noecho();                   /* don't see hited keys on term*    */
+    noecho();                   /* don't see hited keys on term     */
     cbreak();
+    curs_set(0);                /* make the cursor invisible        */
 
-    initGOL(&game);
-    updateUI(&game);
+    // intialize the game at the init state
+    game.state = INIT;
 
-    while(game.state == RUNNING)
+    // game loop
+    while(1)
     {
-        updateGOL(&game);
-        updateUI(&game);
-        usleep(speed*1000000);
-        input = getch();
-
-        // a revoir
-        if(input == SPACE){
-
-            // waiting for releasing space key
-            do{
-                input = getch();
-                usleep(10000);
-
-            }while(input == SPACE);
-
-            game.state = PAUSED;
-            strcpy(game.msgBox, "hit SPACE to Resume\n\n\n");
-            updateUI(&game);
-
-            // waiting for hiting space key again
-            do
-            {
-                input = getch();
-                usleep(10000);
-
-            }while (input != SPACE);
+        if(game.state == INIT)
+        {
+            initGOL(&game);             /* Initialize the game data
+                                           get the initial patterns         */
+            updateUI(&game);            /* Updating the user interface      */
             
-            game.state = RUNNING;
-            updateUI(&game);
         }
-        else if (input == 'm' || input == 'M'){
-            speed /= 1.5;
-        }
-        else if (input == 'l' || input == 'L'){
-            speed *= 1.5;
-        }
-        else if(input == 'x' || input == 'x'){
 
-            refresh();			        /* Print it on to the real screen   */
-            // close curse window
-            endwin();	
-            break;
+        else if(game.state == PAUSED)
+        {
+            // displaying this message
+            strcpy(game.msgBox, "hit R to Resume\n\n\n");
+
+            // updating the user interface
+            updateUI(&game);
+
+            input = getch();
+
+            if(input == 'r' || input == 'R'){
+                game.state = RUNNING;
+            }
+            // to temporize
+            usleep(10000);
         }
+ 
+        
+        else if(game.state == RUNNING)
+        {
+            input = getch();
+
+            // check if space is hitted
+            if(input == SPACE){
+                // changing the state of the game
+                game.state = PAUSED;
+            }
+            // check if M is hitted to higher the animation
+            else if (input == 'm' || input == 'M'){
+                game.speed /= 1.5;
+            }
+            // check if L is hitted to lower the animation while higher than 1.0
+            else if (input == 'l' || input == 'L'){
+                game.speed = game.speed < 1.0 ? 1.0 : game.speed*1.5;
+            }
+            // check if x is hitted to exit
+            else if(input == 'x' || input == 'x'){
+
+                game.state = STOPPED;
+            }
+            
+            usleep(game.speed*1000000);
+
+            updateGOL(&game);
+            updateUI(&game);
+            
+        }
+        else if(game.state == BLINKING || game.state == STABLE)
+        {
+            // check if it already displayed, if not we display this message
+            if(game.state == STABLE){
+                if(strcmp(game.msgBox, "The game is stable if you want : to create a new pattern hit N, or hit X in order to exit\n_        _     _\n    | |      | |   | |\n ___| |_ __ _| |__ | | ___\n/ __| __/ _` | '_ \\| |/ _ \n\\__ \\ || (_| | |_) | |  __/\n|___/\\__\\__,_|_.__/|_|\\___|\n\n")){
+
+                    strcpy(game.msgBox, "The game is stable if you want : to create a new pattern hit N, or hit X in order to exit\n_        _     _\n    | |      | |   | |\n ___| |_ __ _| |__ | | ___\n/ __| __/ _` | '_ \\| |/ _ \n\\__ \\ || (_| | |_) | |  __/\n|___/\\__\\__,_|_.__/|_|\\___|\n\n");
+                }
+            }
+            // the same for blinking state
+            else{
+                if(strcmp(game.msgBox, "The game is blinking if you want : to create a new pattern hit N, or hit X in order to exit\n_     _ _       _    _\n| |   | (_)     | |  (_)\n| |__ | |_ _ __ | | ___ _ __   __ _\n| '_ \\| | | '_ \\| |/ / | '_ \\ / _` |\n| |_) | | | | | |   <| | | | | (_| |\n|_.__/|_|_|_| |_|_|\\_\\_|_| |_|\\__, |\n                               __/ |\n                               |___/\n")){
+
+                    strcpy(game.msgBox, "The game is blinking if you want : to create a new pattern hit N, or hit X in order to exit\n_     _ _       _    _\n| |   | (_)     | |  (_)\n| |__ | |_ _ __ | | ___ _ __   __ _\n| '_ \\| | | '_ \\| |/ / | '_ \\ / _` |\n| |_) | | | | | |   <| | | | | (_| |\n|_.__/|_|_|_| |_|_|\\_\\_|_| |_|\\__, |\n                               __/ |\n                               |___/\n");     
+                }
+            }
+            
+            input = getch();
+
+            if(input == 'N' || input == 'n'){
+                game.state = INIT;
+            }
+            else if(input == 'X' || input == 'x'){
+                game.state = STOPPED;
+            }
+            updateGOL(&game);
+            updateUI(&game);
+            usleep(100000);
+            
+        }
+        else if (game.state == STOPPED)
+        {
+            refresh();			        /* Print it on to the real screen   */
+
+                // close curse window
+                endwin();	
+                // break the loop
+                break;
+        }
+
     }
 		        
 
@@ -162,13 +220,20 @@ int main()
 
 void initGOL(gameOfLife_t *game){
 
+    // setting the cursor to the center of the board
     game->cursorX = SIZE/2;
     game->cursorY = SIZE/2;
 
-    game->state = INIT;
+    // initialize all variables
     game->generation = 0;
 
     game->nbAlive = 0;
+
+    game->speed = 1.0;
+
+    // no blocking mode for waiting an input
+
+    nodelay(stdscr, FALSE);
 
     // set the msgBox
     sprintf(game->msgBox,"Alive : %d\nHit arrows to move the cursor -/+, hit space to change the state of the cell\nThen when you're done, hit enter to start simulation\nHit X to exit\n", game->nbAlive);
@@ -249,9 +314,12 @@ void initGOL(gameOfLife_t *game){
         updateUI(game);
         input = getch();
 
+        usleep(1000);
+
     }while(input != ENTER);
 
     game->state = RUNNING;
+
     // change to non-blocking mode(getch())
     nodelay(stdscr, TRUE);
 
@@ -263,25 +331,6 @@ void updateUI(gameOfLife_t *game){
     clear();
 
     printw(game->msgBox);
-
-    if(game->state == PAUSED){
-
-        printw("state : PAUSED !\n");
-    }
-    else if(game->state == RUNNING){
-
-        if(isEqual(game->cell, game->previousCell))
-        {
-            printw("     _        _     _\n    | |      | |   | |\n ___| |_ __ _| |__ | | ___\n/ __| __/ _` | '_ \\| |/ _ \n\\__ \\ || (_| | |_) | |  __/\n|___/\\__\\__,_|_.__/|_|\\___|\n\n");
-        }
-        else if(isEqual(game->cell, game->secondPreviousCell))
-        {
-
-            printw(" _     _ _       _    _\n| |   | (_)     | |  (_)\n| |__ | |_ _ __ | | ___ _ __   __ _\n| '_ \\| | | '_ \\| |/ / | '_ \\ / _` |\n| |_) | | | | | |   <| | | | | (_| |\n|_.__/|_|_|_| |_|_|\\_\\_|_| |_|\\__, |\n                               __/ |\n                               |___/\n");     
-        }
-
-
-    }
 
     for(int row = 0; row<SIZE; row++)
     {
@@ -298,7 +347,7 @@ void updateUI(gameOfLife_t *game){
                     }
                     else
                     {
-                        printw("|-|");
+                        printw("|U|");
                     }
                 }
                 else{
@@ -313,7 +362,7 @@ void updateUI(gameOfLife_t *game){
                 }
             }
             // if we're on simulation
-            else if(game->state == RUNNING || game->state == PAUSED){
+            else{
 
                 if(game->cell[row][col] == ALIVE)
                 {
@@ -334,8 +383,6 @@ void updateUI(gameOfLife_t *game){
 void updateGOL(gameOfLife_t *game){
 
     gameOfLife_t current = *game;
-
-
    
     for(int row = 0; row<SIZE; row++)
     {
@@ -550,7 +597,7 @@ void updateGOL(gameOfLife_t *game){
     
     if(game->state == RUNNING)
     {
-        //TODO
+        
         game->generation++;
         sprintf(game->msgBox, "Alive %d: step %d\nHit M to speed up , or L to low the speed\nHit X to exit\n\n",game->nbAlive, game->generation);
         
@@ -559,9 +606,24 @@ void updateGOL(gameOfLife_t *game){
             game->state = STOPPED;
         }
         
+        // check if the cells are stable and displaying the correspondig message in that case
+        if(isEqual(game->cell, game->previousCell))
+        {
+            game->state = STABLE;
+            game->speed = 1.0;
+            
+        }
+        // check if the cells are blinking and display a corresponding message in that case.
+        else if(isEqual(game->cell, game->secondPreviousCell))
+        {
+            game->state = BLINKING;
+            game->speed = 1.0;
+        }
+
+    
+        
     }
 }
-
 
 int isEqual(int a[SIZE][SIZE], int b[SIZE][SIZE]){
 
