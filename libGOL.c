@@ -113,7 +113,7 @@ void updateUI(gameOfLife_t *game){
     refresh();
     clear();
 
-    printw(game->msgBox);
+    printw((const char *)game->msgBox);
 
     for(int row = 0; row<SIZE; row++)
     {
