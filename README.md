@@ -2,7 +2,7 @@
 This is a C programmed software which simulates the game of life.
 
 ## Requirements
-this software use the ncurses library, so it is need to be previously installed by typing :
+this software use the ncurses library, so you need to install it, type :
 ```
 sudo apt install libncurses5-dev libncurses5
 ```
@@ -33,4 +33,4 @@ cd
 GOL
 ```
 ## Have fun
-Try what ever configuration you want, you can also modify the size of the screen by defining your own macro "SIZE", then the screen will be SIZE*SIZE (40*40 by default)
+Try what ever configuration you want, you can also modify the size of the screen by defining your own macro "SIZE", then the screen will be SIZExSIZE (40*40 by default)
