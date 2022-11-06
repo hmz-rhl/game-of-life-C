@@ -4,10 +4,10 @@ DEPS = libGOL.h
 OBJ = libGOL.o main.o 
 
 %.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	sudo $(CC) -c -o $@ $< $(CFLAGS)
 
 GOL.exe: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
+	sudo $(CC) -o $@ $^ $(CFLAGS)
 
 clean:
-	sudo rm *.o *.exe
+	sudo rm *.o

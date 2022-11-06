@@ -10,13 +10,17 @@
 
 
 
+
 int main()
 {
+    // todo constant fps
+    long long previous_timestamp = 0; 
+    // instancing the game variable
     gameOfLife_t game;
 
     // speed of the simulation
 
-
+    // variable for the user input
     char input;
     initscr();			        /* Start curses mode 		        */
     
@@ -30,31 +34,43 @@ int main()
     // game loop
     while(1)
     {
+        
+            
         if(game.state == INIT)
         {
             initGOL(&game);             /* Initialize the game data
-                                           get the initial patterns         */
+                                        get the initial patterns         */
             updateUI(&game);            /* Updating the user interface      */
             
         }
 
         else if(game.state == PAUSED)
         {
-            // displaying this message
-            strcpy(game.msgBox, "hit R to Resume\n\n\n");
+            
 
-            // updating the user interface
-            updateUI(&game);
+            // displaying this message
+            sprintf(game.msgBox, "alive : %d \n hit R to Resume\n\n\n", game.nbAlive);
+
+            
 
             input = getch();
 
             if(input == 'r' || input == 'R'){
                 game.state = RUNNING;
+                // updating the user interface
+                updateUI(&game);
+                
+
             }
-            // to temporize
-            usleep(10000);
+             // to control the speed of the simulation
+            if(current_timestamp() - previous_timestamp > game.speed )
+            {
+                updateUI(&game);
+                
+                previous_timestamp = current_timestamp();
+            }
         }
- 
+
         
         else if(game.state == RUNNING)
         {
@@ -67,11 +83,13 @@ int main()
             }
             // check if M is hitted to higher the animation
             else if (input == 'm' || input == 'M'){
-                game.speed /= 1.5;
+                game.speed = game.speed/1.5 < 100.0 ? 100.0 : game.speed/1.5;
+
             }
             // check if L is hitted to lower the animation while higher than 1.0
             else if (input == 'l' || input == 'L'){
-                game.speed = game.speed < 1.0 ? 1.0 : game.speed*1.5;
+                game.speed = game.speed*1.5 > 3500.0 ? 3500.0 : game.speed*1.5;
+
             }
             // check if x is hitted to exit
             else if(input == 'x' || input == 'x'){
@@ -79,28 +97,19 @@ int main()
                 game.state = STOPPED;
             }
             
-            usleep(game.speed*1000000);
+            // to control the speed of the simulation
+            if(current_timestamp() - previous_timestamp > game.speed )
+            {
+                updateGOL(&game);
+                updateUI(&game);
+                previous_timestamp = current_timestamp();
+            }
+            //usleep(game.speed*1000000);
 
-            updateGOL(&game);
-            updateUI(&game);
             
         }
         else if(game.state == BLINKING || game.state == STABLE)
         {
-            // check if it already displayed, if not we display this message
-            if(game.state == STABLE){
-                if(strcmp(game.msgBox, "The game is stable if you want : to create a new pattern hit N, or hit X in order to exit\n_        _     _\n    | |      | |   | |\n ___| |_ __ _| |__ | | ___\n/ __| __/ _` | '_ \\| |/ _ \n\\__ \\ || (_| | |_) | |  __/\n|___/\\__\\__,_|_.__/|_|\\___|\n\n")){
-
-                    strcpy(game.msgBox, "The game is stable if you want : to create a new pattern hit N, or hit X in order to exit\n_        _     _\n    | |      | |   | |\n ___| |_ __ _| |__ | | ___\n/ __| __/ _` | '_ \\| |/ _ \n\\__ \\ || (_| | |_) | |  __/\n|___/\\__\\__,_|_.__/|_|\\___|\n\n");
-                }
-            }
-            // the same for blinking state
-            else{
-                if(strcmp(game.msgBox, "The game is blinking if you want : to create a new pattern hit N, or hit X in order to exit\n_     _ _       _    _\n| |   | (_)     | |  (_)\n| |__ | |_ _ __ | | ___ _ __   __ _\n| '_ \\| | | '_ \\| |/ / | '_ \\ / _` |\n| |_) | | | | | |   <| | | | | (_| |\n|_.__/|_|_|_| |_|_|\\_\\_|_| |_|\\__, |\n                               __/ |\n                               |___/\n")){
-
-                    strcpy(game.msgBox, "The game is blinking if you want : to create a new pattern hit N, or hit X in order to exit\n_     _ _       _    _\n| |   | (_)     | |  (_)\n| |__ | |_ _ __ | | ___ _ __   __ _\n| '_ \\| | | '_ \\| |/ / | '_ \\ / _` |\n| |_) | | | | | |   <| | | | | (_| |\n|_.__/|_|_|_| |_|_|\\_\\_|_| |_|\\__, |\n                               __/ |\n                               |___/\n");     
-                }
-            }
             
             input = getch();
 
@@ -110,9 +119,14 @@ int main()
             else if(input == 'X' || input == 'x'){
                 game.state = STOPPED;
             }
-            updateGOL(&game);
-            updateUI(&game);
-            usleep(100000);
+            // to control the speed of the simulation
+            if(current_timestamp() - previous_timestamp > 3500)
+            {
+                updateGOL(&game);
+                updateUI(&game);
+                previous_timestamp = current_timestamp();
+            }
+            
             
         }
         else if (game.state == STOPPED)
@@ -124,7 +138,7 @@ int main()
                 // break the loop
                 break;
         }
-
+        
     }
 		        
 

@@ -12,7 +12,7 @@ void initGOL(gameOfLife_t *game){
 
     game->nbAlive = 0;
 
-    game->speed = 1.0;
+    game->speed = 500.0;
 
     // no blocking mode for waiting an input
 
@@ -382,7 +382,7 @@ void updateGOL(gameOfLife_t *game){
     {
         
         game->generation++;
-        sprintf(game->msgBox, "Alive %d: step %d\nHit M to speed up , or L to low the speed\nHit X to exit\n\n",game->nbAlive, game->generation);
+        sprintf(game->msgBox, "Alive %d: step %d\t\t %0.2f Generation/sec\nHit M to speed up , or L to low the speed\nHit X to exit\n\n",game->nbAlive, game->generation, 1000.0/game->speed);
         
         if(game->nbAlive + 1 == 0)
         {
@@ -394,6 +394,7 @@ void updateGOL(gameOfLife_t *game){
         {
             game->state = STABLE;
             game->speed = 1.0;
+            strcpy(game->msgBox, "The game is stable if you want : to create a new pattern hit N, or hit X in order to exit\n     _        _     _\n    | |      | |   | |\n ___| |_ __ _| |__ | | ___\n/ __| __/ _` | '_ \\| |/ _ \\\n\\__ \\ || (_| | |_) | |  __/\n|___/\\__\\__,_|_.__/|_|\\___|\n\n");
             
         }
         // check if the cells are blinking and display a corresponding message in that case.
@@ -401,6 +402,8 @@ void updateGOL(gameOfLife_t *game){
         {
             game->state = BLINKING;
             game->speed = 1.0;
+            strcpy(game->msgBox, "The game is blinking if you want : to create a new pattern hit N, or hit X in order to exit\n _     _ _       _    _\n| |   | (_)     | |  (_)\n| |__ | |_ _ __ | | ___ _ __   __ _\n| '_ \\| | | '_ \\| |/ / | '_ \\ / _` |\n| |_) | | | | | |   <| | | | | (_| |\n|_.__/|_|_|_| |_|_|\\_\\_|_| |_|\\__, |\n                               __/ |\n                               |___/\n");     
+
         }
 
     
@@ -424,4 +427,13 @@ int isEqual(int a[SIZE][SIZE], int b[SIZE][SIZE]){
 
     return 1;
     
+}
+
+
+long long current_timestamp() {
+    struct timeval te; 
+    gettimeofday(&te, NULL); // get current time
+    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // calculate milliseconds
+    // printf("milliseconds: %lld\n", milliseconds);
+    return milliseconds;
 }

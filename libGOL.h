@@ -7,6 +7,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <sys/time.h>
+
 
 // defining the macros
 #define MAX 512
@@ -100,3 +102,11 @@ void updateUI(gameOfLife_t *game);
  * 
 **/
 int isEqual(int a[SIZE][SIZE], int b[SIZE][SIZE]);
+
+/**
+ * @brief function that return the current timestamp in ms
+ * 
+ * @return the time in ms
+ * 
+**/
+long long current_timestamp(void);
