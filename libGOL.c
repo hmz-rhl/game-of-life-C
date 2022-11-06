@@ -152,11 +152,48 @@ void updateUI(gameOfLife_t *game){
 
                 if(game->cell[row][col] == ALIVE)
                 {
-                    printw("|#|");
+                    if(col == 0){
+                        printw("|# ");
+
+                    }
+                    else if(col == SIZE - 1){
+
+                        printw(" #|");
+                    }
+                    else{
+                        printw(" # ");
+                    }
+                    
                 }
                 else
                 {
-                    printw("|_|");
+                    
+                    if(col == 0){
+                        if(row == SIZE - 1){
+
+                            printw("|__");
+                        }
+                        else{
+                            printw("|  ");
+                        }
+
+                    }
+                    else if(col == SIZE - 1){
+
+                        if(row == SIZE - 1){
+
+                            printw("__|");
+                        }
+                        else{
+                            printw("  |");
+                        }
+                    }
+                    else if(row == SIZE - 1){
+                       printw("___");
+                    }
+                    else{
+                        printw("   ");
+                    }
                 }
             }
             
@@ -394,7 +431,7 @@ void updateGOL(gameOfLife_t *game){
     {
         
         game->generation++;
-        sprintf(game->msgBox, "Alive %d: step %d\t\t %0.2f Generation/sec\nHit M to speed up , or L to low the speed\nHit X to exit\n\n",game->nbAlive, game->generation, 1000.0/game->speed);
+        sprintf(game->msgBox, "Alive %d: step %d\t\t %0.2f Generation/sec\nHit M to speed up , or L to low the speed, or SPACE to pause the simulation\nHit X to exit\n\n",game->nbAlive, game->generation, 1000.0/game->speed);
         
         if(game->nbAlive + 1 == 0)
         {

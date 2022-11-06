@@ -24,7 +24,7 @@
 
 
 // macro for size of the game 
-#define SIZE 40
+#define SIZE 50
 
 // macro for state of the cells
 #define ALIVE 1

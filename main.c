@@ -13,12 +13,10 @@
 
 int main()
 {
-    // todo constant fps
+    // for frame speed control
     long long previous_timestamp = 0; 
     // instancing the game variable
     gameOfLife_t game;
-
-    // speed of the simulation
 
     // variable for the user input
     char input;
