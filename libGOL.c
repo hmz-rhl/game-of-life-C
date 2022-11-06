@@ -133,7 +133,7 @@ void updateUI(gameOfLife_t *game){
                     }
                     else
                     {
-                        printw("|U|");
+                        printw("|0|");
                     }
                 }
                 else{

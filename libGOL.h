@@ -40,13 +40,6 @@
 #define STABLE -3
 #define BLINKING -4
 
-// structure of a cell
-typedef struct cell
-{
-    int state;
-
-} cell_t;
-
 //structure of the game
 typedef struct gameOfLife
 {

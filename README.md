@@ -33,4 +33,4 @@ cd
 GOL
 ```
 ## Have fun
-Try what ever configuration you want, you can also modify the size of the screen by defining your own macro "SIZE", then the screen will be SIZExSIZE (40*40 by default)
+Try what ever configuration you want, you can also modify the size of the screen by defining your own macro "SIZE", then the screen will be SIZExSIZE (50x50 by default)

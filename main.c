@@ -79,12 +79,12 @@ int main()
                 // changing the state of the game
                 game.state = PAUSED;
             }
-            // check if M is hitted to higher the animation
+            // check if M is hitted to speed up the animation
             else if (input == 'm' || input == 'M'){
                 game.speed = game.speed/1.5 < 100.0 ? 100.0 : game.speed/1.5;
 
             }
-            // check if L is hitted to lower the animation while higher than 1.0
+            // check if L is hitted to slow down the animation while higher than 1.0
             else if (input == 'l' || input == 'L'){
                 game.speed = game.speed*1.5 > 3500.0 ? 3500.0 : game.speed*1.5;
 
