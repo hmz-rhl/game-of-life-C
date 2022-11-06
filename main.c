@@ -133,14 +133,13 @@ int main()
         {
             refresh();			        /* Print it on to the real screen   */
 
-                // close curse window
-                endwin();	
-                // break the loop
-                break;
+            // close curse window
+            endwin();	
+            // break the loop
+            break;
         }
         
     }
-		        
-
+	
     return EXIT_SUCCESS;
 }

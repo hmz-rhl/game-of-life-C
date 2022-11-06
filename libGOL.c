@@ -40,6 +40,8 @@ void initGOL(gameOfLife_t *game){
 
     do{
         
+        // check the keys and move the cursor
+
         if(input == UP)
         {
             if(game->cursorY > 0)
@@ -113,6 +115,7 @@ void updateUI(gameOfLife_t *game){
     refresh();
     clear();
 
+    // display the new message box
     printw((const char *)(game->msgBox));
 
     for(int row = 0; row<SIZE; row++)
@@ -144,7 +147,7 @@ void updateUI(gameOfLife_t *game){
                         }
                 }
             }
-            // if we're on simulation
+            // if we're on simulation we show only the cells and not cursor
             else{
 
                 if(game->cell[row][col] == ALIVE)
@@ -165,6 +168,7 @@ void updateUI(gameOfLife_t *game){
 
 void updateGOL(gameOfLife_t *game){
 
+    // storing the game variable before change to compare with the new one for detecting blinking or stable
     gameOfLife_t current = *game;
    
     for(int row = 0; row<SIZE; row++)
@@ -194,6 +198,7 @@ void updateGOL(gameOfLife_t *game){
                 }
 
             }
+            // corner up left
             else if(col == 0 && row == 0)
             {
                 //overpopulation
@@ -216,6 +221,7 @@ void updateGOL(gameOfLife_t *game){
                 }
             
             }
+            // corner down left
             else if(col == 0 && row == SIZE-1)
             {
                 //overpopulation
@@ -237,6 +243,7 @@ void updateGOL(gameOfLife_t *game){
                     game->nbAlive++;
                 }
             }
+            // corner up right
             else if(col == SIZE - 1 && row == 0)
             {
                 //overpopulation
@@ -258,6 +265,7 @@ void updateGOL(gameOfLife_t *game){
                     game->nbAlive++;
                 }
             }
+            // corner down right
             else if(col == SIZE - 1 && row == SIZE -1)
             {
                 //overpopulation
@@ -280,6 +288,7 @@ void updateGOL(gameOfLife_t *game){
                 }
 
             }
+            // first column
             else if(col == 0)
             {
                 //overpopulation
@@ -302,6 +311,7 @@ void updateGOL(gameOfLife_t *game){
                 }
                 
             }
+            // last column
             else if(col == SIZE -1)
             {
                 //overpopulation
@@ -323,6 +333,7 @@ void updateGOL(gameOfLife_t *game){
                     game->nbAlive++;
                 }
             }
+            // first row
             else if(row == 0)
             {
                 //overpopulation
@@ -344,6 +355,7 @@ void updateGOL(gameOfLife_t *game){
                     game->nbAlive++;
                 }
             }
+            // last row
             else if(row == SIZE -1)
             {
                 //overpopulation

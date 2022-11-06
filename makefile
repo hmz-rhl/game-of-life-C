@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -lncurses
+CFLAGS=-Wall -lncurses -pg
 DEPS = libGOL.h
 OBJ = libGOL.o main.o 
 
@@ -10,4 +10,4 @@ GOL.exe: $(OBJ)
 	sudo $(CC) -o $@ $^ $(CFLAGS)
 
 clean:
-	sudo rm *.o
+	sudo rm *.o *.out
