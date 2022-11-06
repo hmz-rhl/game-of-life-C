@@ -2,7 +2,7 @@
 This is a C programmed software which simulates the game of life.
 
 ## Requirements
-this software use the ncurses library, so it is need to be previously installed by typing :
+this software use the ncurses library, so you need to install it, type :
 ```
 sudo apt install libncurses5-dev libncurses5
 ```
